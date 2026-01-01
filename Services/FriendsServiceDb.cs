@@ -27,5 +27,6 @@ public class FriendsServiceDb : IFriendsService
     public Task<ResponseItemDto<IFriend>> DeleteFriendAsync(Guid id) => _repo.DeleteFriendAsync(id);
     public Task<ResponseItemDto<IFriend>> UpdateFriendAsync(FriendCuDto item) => _repo.UpdateFriendAsync(item);
     public Task<ResponseItemDto<IFriend>> CreateFriendAsync(FriendCuDto item) => _repo.CreateFriendAsync(item);
+    public Task<Dictionary<string, List<IFriend>>> ReadFriendsByCountryAsync(bool seeded, bool flat) => _repo.ReadFriendsByCountryAsync(seeded, flat);
 }
 

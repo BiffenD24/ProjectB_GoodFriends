@@ -1,0 +1,136 @@
+@page
+@model OverviewModel
+@{
+    ViewData["Title"] = "Friends Overview by Country";
+}
+
+<div class="container mt-5">
+    <h1>Friends Overview by Country</h1>
+    
+    <form method="get" class="mb-3">
+        <div class="form-check">
+            <input asp-for="UseSeeds" class="form-check-input" type="checkbox" id="useSeeds" onchange="this.form.submit()">
+            <label class="form-check-label" for="useSeeds">
+                Use seeded data
+            </label>
+        </div>
+    </form>
+    
+    @if (Model.FriendsByCountry == null || Model.FriendsByCountry.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            No friends found.
+        </div>
+    }
+    else
+    {
+        @foreach (var countryGroup in Model.FriendsByCountry)
+        {
+            var friendsByCity = countryGroup.Value.GroupBy(f => f.Address?.City ?? "Unknown").OrderBy(g => g.Key);
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        @countryGroup.Key 
+                        <span class="badge badge-light">@countryGroup.Value.Count friends</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var cityGroup in friendsByCity)
+                    {
+                        <div class="city-section mb-4">
+                            <h6 class="text-secondary border-bottom pb-2">
+                                <i class="bi bi-geo-alt-fill"></i> @cityGroup.Key
+                                <span class="badge bg-secondary">@cityGroup.Count()</span>
+                            </h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Address</th>
+                                            <th>Pets</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var friend in cityGroup.OrderBy(f => f.LastName).ThenBy(f => f.FirstName))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a href="~/ViewFriend?id=@friend.FriendId" class="text-decoration-none">
+                                                        <strong>@friend.FirstName @friend.LastName</strong>
+                                                    </a>
+                                                </td>
+                                                <td>@friend.Email</td>
+                                                <td>
+                                                    @friend.Address?.StreetAddress<br />
+                                                    <small class="text-muted">@friend.Address?.ZipCode</small>
+                                                </td>
+                                                <td>
+                                                    @if (friend.Pets != null && friend.Pets.Any())
+                                                    {
+                                                        <ul class="list-unstyled mb-0">
+                                                            @foreach (var pet in friend.Pets)
+                                                            {
+                                                                <li>
+                                                                    <span class="badge bg-info text-dark">@pet.Kind</span>
+                                                                    <strong>@pet.Name</strong>
+                                                                    <small class="text-muted">(@pet.Mood)</small>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">No pets</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    .badge-light {
+        background-color: #f8f9fa !important;
+        color: #212529 !important;
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .city-section {
+        padding-left: 1rem;
+    }
+    
+    .city-section h6 {
+        margin-top: 1rem;
+        font-weight: 600;
+    }
+    
+    .city-section:first-child h6 {
+        margin-top: 0;
+    }
+    
+    .table-sm td {
+        vertical-align: middle;
+    }
+    
+    .badge.bg-info {
+        margin-right: 0.25rem;
+    }
+</style>

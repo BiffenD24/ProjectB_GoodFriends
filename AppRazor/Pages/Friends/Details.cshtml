@@ -1,0 +1,276 @@
+@page "{id}"
+@model DetailsModel
+@{
+    ViewData["Title"] = "Friend Details";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            @if (Model.Friend == null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    Friend not found.
+                </div>
+            }
+            else
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">@Model.Friend.FirstName @Model.Friend.LastName</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Friend Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Email:</strong>
+                                    <a href="mailto:@Model.Friend.Email">@Model.Friend.Email</a>
+                                </p>
+                                @if (Model.Friend.Birthday.HasValue)
+                                {
+                                    <p>
+                                        <strong>Birthday:</strong>
+                                        @Model.Friend.Birthday.Value.ToString("MMMM dd, yyyy")
+                                    </p>
+                                }
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <a href="~/EditFriend?id=@Model.Friend.FriendId" class="btn btn-warning">
+                                    <i class="bi bi-pencil"></i> Edit Friend
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-geo-alt-fill"></i> Address
+                                </h5>
+                                @if (Model.Friend.Address != null)
+                                {
+                                    <a href="~/EditAddress?id=@Model.Friend.Address.AddressId&friendId=@Model.Friend.FriendId" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                }
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Friend.Address == null)
+                                {
+                                    <p class="text-muted">No address information available.</p>
+                                    <a href="~/EditAddress?friendId=@Model.Friend.FriendId" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-plus"></i> Add Address
+                                    </a>
+                                }
+                                else
+                                {
+                                    <p>
+                                        <strong>Street:</strong> @Model.Friend.Address.StreetAddress<br />
+                                        <strong>City:</strong> @Model.Friend.Address.City<br />
+                                        <strong>Zip Code:</strong> @Model.Friend.Address.ZipCode<br />
+                                        <strong>Country:</strong> @Model.Friend.Address.Country
+                                    </p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Pets Section -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-heart"></i> Pets (@(Model.Friend.Pets?.Count ?? 0))
+                                </h5>
+                                <a href="~/AddPet?friendId=@Model.Friend.FriendId" class="btn btn-sm btn-success">
+                                    <i class="bi bi-plus"></i> Add Pet
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Friend.Pets == null || !Model.Friend.Pets.Any())
+                                {
+                                    <p class="text-muted">No pets added yet.</p>
+                                }
+                                else
+                                {
+                                    <div class="row">
+                                        @foreach (var pet in Model.Friend.Pets)
+                                        {
+                                            <div class="col-md-6 mb-3">
+                                                <div class="card border-light">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">@pet.Name</h6>
+                                                        <p class="card-text mb-2">
+                                                            <span class="badge bg-info">@pet.Kind</span>
+                                                            <span class="badge bg-warning text-dark">@pet.Mood</span>
+                                                        </p>
+                                                        <button class="btn btn-sm btn-danger" 
+                                                                onclick="deletePet('@pet.PetId', '@pet.Name', '@Model.Friend.FriendId')">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Quotes Section -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-chat-quote"></i> Favorite Quotes (@(Model.Friend.Quotes?.Count ?? 0))
+                                </h5>
+                                <a href="~/AddQuote?friendId=@Model.Friend.FriendId" class="btn btn-sm btn-success">
+                                    <i class="bi bi-plus"></i> Add Quote
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Friend.Quotes == null || !Model.Friend.Quotes.Any())
+                                {
+                                    <p class="text-muted">No favorite quotes yet.</p>
+                                }
+                                else
+                                {
+                                    @foreach (var quote in Model.Friend.Quotes)
+                                    {
+                                        <div class="card border-light mb-3">
+                                            <div class="card-body">
+                                                <blockquote class="blockquote mb-2">
+                                                    <p class="mb-0">@quote.QuoteText</p>
+                                                    <footer class="blockquote-footer">@quote.Author</footer>
+                                                </blockquote>
+                                                <button class="btn btn-sm btn-danger" 
+                                                        onclick="deleteQuote('@quote.QuoteId', '@quote.Author', '@Model.Friend.FriendId')">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Back Button -->
+                        <div class="mt-4">
+                            <a href="~/Friends/Overview" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Overview
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal for Pet -->
+<div class="modal fade" id="deletePetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Delete Pet</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the pet <strong id="petName"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeletePetBtn" onclick="confirmDeletePet()">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal for Quote -->
+<div class="modal fade" id="deleteQuoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Delete Quote</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the quote by <strong id="quoteName"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteQuoteBtn" onclick="confirmDeleteQuote()">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let petToDelete = null;
+    let quoteToDelete = null;
+    let friendId = null;
+
+    function deletePet(petId, petName, fId) {
+        petToDelete = petId;
+        friendId = fId;
+        document.getElementById('petName').textContent = petName;
+        const modal = new bootstrap.Modal(document.getElementById('deletePetModal'));
+        modal.show();
+    }
+
+    function confirmDeletePet() {
+        if (!petToDelete || !friendId) return;
+
+        fetch(`/api/pets/DeleteItem/${petToDelete}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Close modal and reload
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deletePetModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Failed to delete pet');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting pet');
+        });
+    }
+
+    function deleteQuote(quoteId, author, fId) {
+        quoteToDelete = quoteId;
+        friendId = fId;
+        document.getElementById('quoteName').textContent = author;
+        const modal = new bootstrap.Modal(document.getElementById('deleteQuoteModal'));
+        modal.show();
+    }
+
+    function confirmDeleteQuote() {
+        if (!quoteToDelete || !friendId) return;
+
+        fetch(`/api/quotes/DeleteItem/${quoteToDelete}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                // Close modal and reload
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteQuoteModal'));
+                modal.hide();
+                location.reload();
+            } else {
+                alert('Failed to delete quote');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting quote');
+        });
+    }
+</script>

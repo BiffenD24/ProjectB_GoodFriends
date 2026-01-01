@@ -1,4 +1,6 @@
-﻿namespace Models.DTO;
+﻿using Models.Interfaces;
+
+namespace Models.DTO;
 
 public class ResponsePageDto<T>
 {
@@ -13,6 +15,8 @@ public class ResponsePageDto<T>
     public int PageNr { get; init; }
     public int PageSize { get; init; }
     public int PageCount => (int)Math.Ceiling((double)DbItemsCount / PageSize);
+
+    public IFriend Data { get; set; }
 }
 
 public class ResponseItemDto<T>

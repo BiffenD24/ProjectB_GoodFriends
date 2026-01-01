@@ -12,9 +12,6 @@
 # .\database-rebuild-all.ps1 sql-music sqlserver docker dbo ../AppRazor
 # .\database-rebuild-all.ps1 sql-music sqlserver docker dbo ../AppMvc
 
-# Exit immediately if any command fails
-$ErrorActionPreference = "Stop"
-
 param(
     [Parameter(Mandatory=$true)]
     [string]$DatabaseName,

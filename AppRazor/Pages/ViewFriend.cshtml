@@ -1,0 +1,111 @@
+﻿@page
+@model AppRazor.Pages.ViewGroupModel
+@{
+    ViewData["Title"] = "View Friend";
+}
+
+<!-- Page view-friend -->
+<div class="container px-4 py-4" id="view-friend">
+    <h2 class="pb-2 border-bottom">
+    View details of a friend
+        <a href="~/Members/EditGroup?id=@Model.Friend.FriendId">
+            <svg class="bi text-body-secondary flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#edit" /></svg>
+        </a>
+    </h2>
+    <form class="needs-validation" novalidate>
+        <div class="row row-cols-1 row-cols-lg-4 align-items-stretch g-4 py-5">
+            <div class="col-md-7 col-lg-10">
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" value="@Model.Friend.FirstName" readonly>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" value="@Model.Friend.LastName" readonly>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" value="@Model.Friend.Email" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="birthday" class="form-label">Birthday</label>
+                        <input type="text" class="form-control" id="birthday" value="@Model.Friend.Birthday?.ToString("yyyy-MM-dd")" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="street" class="form-label">Street Address</label>
+                        <input type="text" class="form-control" id="street" value="@Model.Friend.Address?.StreetAddress" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="zipcode" class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" id="zipcode" value="@Model.Friend.Address?.ZipCode" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" value="@Model.Friend.Address?.City" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="country" class="form-label">Country</label>
+                        <input type="text" class="form-control" id="country" value="@Model.Friend.Address?.Country" readonly>
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <h3 class="pb-2">Pets</h3>
+
+                    <div class="row mb-2 text-center">
+                        <div class="col-md-4 themed-grid-head-col">Name</div>
+                        <div class="col-md-4 themed-grid-head-col">Type</div>
+                        <div class="col-md-4 themed-grid-head-col">Mood</div>
+                    </div>
+                    @if (Model.Friend.Pets != null && Model.Friend.Pets.Any())
+                    {
+                        @foreach (var item in Model.Friend.Pets)
+                        {
+                            <div class="row mb-2 text-center">
+                                <div class="col-md-4 themed-grid-col">@item.Name</div>
+                                <div class="col-md-4 themed-grid-col">@item.Kind</div>
+                                <div class="col-md-4 themed-grid-col">@item.Mood</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="row mb-2 text-center">
+                            <div class="col-md-12 themed-grid-col text-muted">No pets</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row g-1">
+                    <h3 class="pb-2">Favorite Quotes</h3>
+
+                    <div class="row mb-2 text-center">
+                        <div class="col-md-8 themed-grid-head-col">Quote</div>
+                        <div class="col-md-4 themed-grid-head-col">Author</div>
+                    </div>
+                    @if (Model.Friend.Quotes != null && Model.Friend.Quotes.Any())
+                    {
+                        @foreach (var item in Model.Friend.Quotes)
+                        {
+                            <div class="row mb-2 text-center">
+                                <div class="col-md-8 themed-grid-col">@item.QuoteText</div>
+                                <div class="col-md-4 themed-grid-col"><em>@item.Author</em></div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="row mb-2 text-center">
+                            <div class="col-md-12 themed-grid-col text-muted">No quotes</div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+

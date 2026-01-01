@@ -17,6 +17,7 @@ public interface IFriendsService
     public Task<ResponseItemDto<IFriend>> DeleteFriendAsync(Guid id);
     public Task<ResponseItemDto<IFriend>> UpdateFriendAsync(FriendCuDto item);
     public Task<ResponseItemDto<IFriend>> CreateFriendAsync(FriendCuDto item);
+    public Task<Dictionary<string, List<IFriend>>> ReadFriendsByCountryAsync(bool seeded, bool flat);
 }
 
 public interface IAddressesService

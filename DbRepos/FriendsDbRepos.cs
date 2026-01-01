@@ -102,6 +102,34 @@ public class FriendsDbRepos
         return ret;
     }
 
+    public async Task<Dictionary<string, List<IFriend>>> ReadFriendsByCountryAsync(bool seeded, bool flat)
+    {
+        IQueryable<FriendDbM> query;
+        if (flat)
+        {
+            query = _dbContext.Friends.AsNoTracking();
+        }
+        else
+        {
+            query = _dbContext.Friends.AsNoTracking()
+                .Include(i => i.AddressDbM)
+                .Include(i => i.PetsDbM)
+                .Include(i => i.QuotesDbM);
+        }
+
+        var friends = await query
+            .Where(i => i.Seeded == seeded)
+            .ToListAsync<IFriend>();
+
+        // Group friends by country
+        var groupedByCountry = friends
+            .GroupBy(f => f.Address?.Country ?? "Unknown")
+            .OrderBy(g => g.Key)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        return groupedByCountry;
+    }
+
     public async Task<ResponseItemDto<IFriend>> DeleteFriendAsync(Guid id)
     {
         //Find the instance with matching id

@@ -1,0 +1,176 @@
+@page "{id?}"
+@model EditFriendModel
+@{
+    ViewData["Title"] = Model.IsNewFriend ? "Add Friend" : "Edit Friend";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @Model.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form id="editForm" method="post">
+                        <input type="hidden" name="FriendId" value="@Model.Friend?.FriendId" />
+
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("FirstName") ? "is-invalid" : "")" 
+                                   id="firstName" name="FirstName" value="@Model.Friend?.FirstName" 
+                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
+                                   title="First name can only contain letters, numbers, and spaces">
+                            @if (Model.ValidationErrors.ContainsKey("FirstName"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["FirstName"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("LastName") ? "is-invalid" : "")" 
+                                   id="lastName" name="LastName" value="@Model.Friend?.LastName" 
+                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
+                                   title="Last name can only contain letters, numbers, and spaces">
+                            @if (Model.ValidationErrors.ContainsKey("LastName"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["LastName"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control @(Model.ValidationErrors.ContainsKey("Email") ? "is-invalid" : "")" 
+                                   id="email" name="Email" value="@Model.Friend?.Email" 
+                                   required maxlength="255">
+                            @if (Model.ValidationErrors.ContainsKey("Email"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["Email"]
+                                </div>
+                            }
+                            <small class="form-text text-muted">Please enter a valid email address.</small>
+                        </div>
+
+                        <!-- Birthday -->
+                        <div class="mb-3">
+                            <label for="birthday" class="form-label">Birthday</label>
+                            <input type="date" class="form-control @(Model.ValidationErrors.ContainsKey("Birthday") ? "is-invalid" : "")" 
+                                   id="birthday" name="Birthday" 
+                                   value="@(Model.Friend?.Birthday?.ToString("yyyy-MM-dd") ?? "")">
+                            @if (Model.ValidationErrors.ContainsKey("Birthday"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["Birthday"]
+                                </div>
+                            }
+                            <small class="form-text text-muted">Must be a date in the past after 1900.</small>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> @(Model.IsNewFriend ? "Add" : "Update") Friend
+                            </button>
+                            <a href="@(Model.IsNewFriend ? "~/Friends/Overview" : $"~/Friends/Details/{Model.Friend?.FriendId}")" 
+                               class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            @if (Model.ShowSuccessMessage)
+            {
+                <div class="alert alert-success mt-3" role="alert">
+                    <i class="bi bi-check-circle"></i> 
+                    Friend @(Model.IsNewFriend ? "added" : "updated") successfully!
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side validation
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        const form = this;
+        
+        // Validate first name
+        const firstName = document.getElementById('firstName').value.trim();
+        if (!firstName) {
+            e.preventDefault();
+            alert('First name is required');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9\s]*$/.test(firstName)) {
+            e.preventDefault();
+            alert('First name can only contain letters, numbers, and spaces');
+            return false;
+        }
+
+        // Validate last name
+        const lastName = document.getElementById('lastName').value.trim();
+        if (!lastName) {
+            e.preventDefault();
+            alert('Last name is required');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9\s]*$/.test(lastName)) {
+            e.preventDefault();
+            alert('Last name can only contain letters, numbers, and spaces');
+            return false;
+        }
+
+        // Validate email
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+            e.preventDefault();
+            alert('Email is required');
+            return false;
+        }
+        const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        if (!emailPattern.test(email)) {
+            e.preventDefault();
+            alert('Email must be a valid email address');
+            return false;
+        }
+
+        // Validate birthday if provided
+        const birthday = document.getElementById('birthday').value;
+        if (birthday) {
+            const birthdayDate = new Date(birthday);
+            const today = new Date();
+            if (birthdayDate > today) {
+                e.preventDefault();
+                alert('Birthday must be in the past');
+                return false;
+            }
+            if (birthdayDate.getFullYear() < 1900) {
+                e.preventDefault();
+                alert('Birthday must be after 1900');
+                return false;
+            }
+        }
+
+        return true;
+    });
+</script>

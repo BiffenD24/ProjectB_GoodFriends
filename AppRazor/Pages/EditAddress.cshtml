@@ -1,0 +1,180 @@
+@page "{id?}"
+@model EditAddressModel
+@{
+    ViewData["Title"] = Model.IsNewAddress ? "Add Address" : "Edit Address";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @Model.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form id="editAddressForm" method="post">
+                        <input type="hidden" name="AddressId" value="@Model.Address?.AddressId" />
+                        <input type="hidden" name="FriendId" value="@Model.FriendId" />
+
+                        <!-- Street Address -->
+                        <div class="mb-3">
+                            <label for="streetAddress" class="form-label">Street Address <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("StreetAddress") ? "is-invalid" : "")" 
+                                   id="streetAddress" name="StreetAddress" value="@Model.Address?.StreetAddress" 
+                                   required maxlength="255" pattern="^[a-zA-Z0-9\s]*$"
+                                   title="Street address can only contain letters, numbers, and spaces">
+                            @if (Model.ValidationErrors.ContainsKey("StreetAddress"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["StreetAddress"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- City -->
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("City") ? "is-invalid" : "")" 
+                                   id="city" name="City" value="@Model.Address?.City" 
+                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
+                                   title="City can only contain letters, numbers, and spaces">
+                            @if (Model.ValidationErrors.ContainsKey("City"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["City"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Zip Code -->
+                        <div class="mb-3">
+                            <label for="zipCode" class="form-label">Zip Code <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control @(Model.ValidationErrors.ContainsKey("ZipCode") ? "is-invalid" : "")" 
+                                   id="zipCode" name="ZipCode" value="@Model.Address?.ZipCode" 
+                                   required min="0" max="999999">
+                            @if (Model.ValidationErrors.ContainsKey("ZipCode"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["ZipCode"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Country -->
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("Country") ? "is-invalid" : "")" 
+                                   id="country" name="Country" value="@Model.Address?.Country" 
+                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
+                                   title="Country can only contain letters, numbers, and spaces">
+                            @if (Model.ValidationErrors.ContainsKey("Country"))
+                            {
+                                <div class="invalid-feedback d-block">
+                                    @Model.ValidationErrors["Country"]
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> @(Model.IsNewAddress ? "Add" : "Update") Address
+                            </button>
+                            @if (!string.IsNullOrEmpty(Model.FriendId?.ToString()))
+                            {
+                                <a href="~/Friends/Details/@Model.FriendId" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to Friend
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="~/Friends/Overview" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            @if (Model.ShowSuccessMessage)
+            {
+                <div class="alert alert-success mt-3" role="alert">
+                    <i class="bi bi-check-circle"></i> 
+                    Address @(Model.IsNewAddress ? "added" : "updated") successfully!
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side validation
+    document.getElementById('editAddressForm').addEventListener('submit', function(e) {
+        const form = this;
+        
+        // Validate street address
+        const streetAddress = document.getElementById('streetAddress').value.trim();
+        if (!streetAddress) {
+            e.preventDefault();
+            alert('Street address is required');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9\s]*$/.test(streetAddress)) {
+            e.preventDefault();
+            alert('Street address can only contain letters, numbers, and spaces');
+            return false;
+        }
+
+        // Validate city
+        const city = document.getElementById('city').value.trim();
+        if (!city) {
+            e.preventDefault();
+            alert('City is required');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9\s]*$/.test(city)) {
+            e.preventDefault();
+            alert('City can only contain letters, numbers, and spaces');
+            return false;
+        }
+
+        // Validate zip code
+        const zipCode = document.getElementById('zipCode').value.trim();
+        if (!zipCode) {
+            e.preventDefault();
+            alert('Zip code is required');
+            return false;
+        }
+        const zipNum = parseInt(zipCode);
+        if (isNaN(zipNum) || zipNum < 0 || zipNum > 999999) {
+            e.preventDefault();
+            alert('Zip code must be a number between 0 and 999999');
+            return false;
+        }
+
+        // Validate country
+        const country = document.getElementById('country').value.trim();
+        if (!country) {
+            e.preventDefault();
+            alert('Country is required');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9\s]*$/.test(country)) {
+            e.preventDefault();
+            alert('Country can only contain letters, numbers, and spaces');
+            return false;
+        }
+
+        return true;
+    });
+</script>
