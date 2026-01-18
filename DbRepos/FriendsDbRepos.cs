@@ -212,14 +212,18 @@ public class FriendsDbRepos
     private async Task navProp_FriendCUdto_to_FriendDbM(FriendCuDto itemDtoSrc, FriendDbM itemDst)
     {
         //update AddressDbM from itemDto.AddressId
-        itemDst.AddressDbM = (itemDtoSrc.AddressId != null) ? await _dbContext.Addresses.FirstOrDefaultAsync(
-            a => (a.AddressId == itemDtoSrc.AddressId)) : null;
+        //Only update if AddressId is explicitly provided (not null)
+        if (itemDtoSrc.AddressId != null)
+        {
+            itemDst.AddressDbM = await _dbContext.Addresses.FirstOrDefaultAsync(
+                a => (a.AddressId == itemDtoSrc.AddressId));
+        }
 
         //update PetsDbM from itemDto.PetsId list
-        List<PetDbM> pets = null;
+        //Only update if PetsId is explicitly provided (not null)
         if (itemDtoSrc.PetsId != null)
         {
-            pets = new List<PetDbM>();
+            List<PetDbM> pets = new List<PetDbM>();
             foreach (var id in itemDtoSrc.PetsId)
             {
                 var p = await _dbContext.Pets.FirstOrDefaultAsync(i => i.PetId == id);
@@ -228,14 +232,14 @@ public class FriendsDbRepos
 
                 pets.Add(p);
             }
+            itemDst.PetsDbM = pets;
         }
-        itemDst.PetsDbM = pets;
 
         //update QuotesDbM from itemDto.QuotesId
-        List<QuoteDbM> quotes = null;
+        //Only update if QuotesId is explicitly provided (not null)
         if (itemDtoSrc.QuotesId != null)
         {
-            quotes = new List<QuoteDbM>();
+            List<QuoteDbM> quotes = new List<QuoteDbM>();
             foreach (var id in itemDtoSrc.QuotesId)
             {
                 var q = await _dbContext.Quotes.FirstOrDefaultAsync(i => i.QuoteId == id);
@@ -244,7 +248,7 @@ public class FriendsDbRepos
 
                 quotes.Add(q);
             }
+            itemDst.QuotesDbM = quotes;
         }
-        itemDst.QuotesDbM = quotes;
     }
 }
