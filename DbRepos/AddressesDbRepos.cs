@@ -204,10 +204,10 @@ public class AddressesDbRepos
     private async Task navProp_AddressCUdto_to_AddressDbM(AddressCuDto itemDtoSrc, AddressDbM itemDst)
     {
         //update FriendsDbM from itemDto.FriendId
-        List<FriendDbM> friends = null;
+        //Only update if FriendsId is explicitly provided (not null)
         if (itemDtoSrc.FriendsId != null)
         {
-            friends = new List<FriendDbM>();
+            List<FriendDbM> friends = new List<FriendDbM>();
             foreach (var id in itemDtoSrc.FriendsId)
             {
                 var f = await _dbContext.Friends.FirstOrDefaultAsync(i => i.FriendId == id);
@@ -216,7 +216,8 @@ public class AddressesDbRepos
 
                 friends.Add(f);
             }
+            itemDst.FriendsDbM = friends;
         }
-        itemDst.FriendsDbM = friends;
+        // If FriendsId is null, leave the existing friends unchanged
     }
 }

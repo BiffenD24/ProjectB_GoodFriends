@@ -40,15 +40,6 @@ public class FriendCuDto
     }
     public void EnsureValidity()
     {
-        // RegEx check to ensure filter only contains a-z, 0-9, and spaces
-        if (!string.IsNullOrEmpty(FirstName) && !Regex.IsMatch(FirstName, @"^[a-zA-Z0-9\s]*$"))
-        {
-            throw new ArgumentException("FirstName can only contain letters (a-z), numbers (0-9), and spaces.");
-        }
-        if (!string.IsNullOrEmpty(LastName) && !Regex.IsMatch(LastName, @"^[a-zA-Z0-9\s]*$"))
-        {
-            throw new ArgumentException("LastName can only contain letters (a-z), numbers (0-9), and spaces.");
-        }
         if (!string.IsNullOrEmpty(Email) && !Regex.IsMatch(Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
         {
             throw new ArgumentException("Email has to be a valid email address.");
@@ -93,19 +84,6 @@ public class AddressCuDto
 
     public void EnsureValidity()
     {
-        // RegEx check to ensure filter only contains a-z, 0-9, and spaces
-        if (!string.IsNullOrEmpty(StreetAddress) && !Regex.IsMatch(StreetAddress, @"^[a-zA-Z0-9\s]*$"))
-        {
-            throw new ArgumentException("StreetAddress can only contain letters (a-z), numbers (0-9), and spaces.");
-        }
-        if (!string.IsNullOrEmpty(City) && !Regex.IsMatch(City, @"^[a-zA-Z0-9\s]*$"))
-        {
-            throw new ArgumentException("City can only contain letters (a-z), numbers (0-9), and spaces.");
-        }
-        if (!string.IsNullOrEmpty(Country) && !Regex.IsMatch(Country, @"^[a-zA-Z0-9\s]*$"))
-        {
-            throw new ArgumentException("Country can only contain letters (a-z), numbers (0-9), and spaces.");
-        }
         if (ZipCode <= 0) throw new ArgumentException("ZipCode has to be larger than zero");
     }
 }

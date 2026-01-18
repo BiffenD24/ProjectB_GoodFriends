@@ -21,16 +21,15 @@
                     }
 
                     <form id="editAddressForm" method="post">
-                        <input type="hidden" name="AddressId" value="@Model.Address?.AddressId" />
-                        <input type="hidden" name="FriendId" value="@Model.FriendId" />
+                        <input type="hidden" asp-for="AddressId" />
+                        <input type="hidden" asp-for="FriendId" />
 
                         <!-- Street Address -->
                         <div class="mb-3">
                             <label for="streetAddress" class="form-label">Street Address <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("StreetAddress") ? "is-invalid" : "")" 
-                                   id="streetAddress" name="StreetAddress" value="@Model.Address?.StreetAddress" 
-                                   required maxlength="255" pattern="^[a-zA-Z0-9\s]*$"
-                                   title="Street address can only contain letters, numbers, and spaces">
+                                   id="streetAddress" asp-for="StreetAddress" 
+                                   required maxlength="255">
                             @if (Model.ValidationErrors.ContainsKey("StreetAddress"))
                             {
                                 <div class="invalid-feedback d-block">
@@ -43,9 +42,8 @@
                         <div class="mb-3">
                             <label for="city" class="form-label">City <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("City") ? "is-invalid" : "")" 
-                                   id="city" name="City" value="@Model.Address?.City" 
-                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
-                                   title="City can only contain letters, numbers, and spaces">
+                                   id="city" asp-for="City" 
+                                   required maxlength="100">
                             @if (Model.ValidationErrors.ContainsKey("City"))
                             {
                                 <div class="invalid-feedback d-block">
@@ -58,7 +56,7 @@
                         <div class="mb-3">
                             <label for="zipCode" class="form-label">Zip Code <span class="text-danger">*</span></label>
                             <input type="number" class="form-control @(Model.ValidationErrors.ContainsKey("ZipCode") ? "is-invalid" : "")" 
-                                   id="zipCode" name="ZipCode" value="@Model.Address?.ZipCode" 
+                                   id="zipCode" asp-for="ZipCode" 
                                    required min="0" max="999999">
                             @if (Model.ValidationErrors.ContainsKey("ZipCode"))
                             {
@@ -72,9 +70,8 @@
                         <div class="mb-3">
                             <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("Country") ? "is-invalid" : "")" 
-                                   id="country" name="Country" value="@Model.Address?.Country" 
-                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
-                                   title="Country can only contain letters, numbers, and spaces">
+                                   id="country" asp-for="Country" 
+                                   required maxlength="100">
                             @if (Model.ValidationErrors.ContainsKey("Country"))
                             {
                                 <div class="invalid-feedback d-block">

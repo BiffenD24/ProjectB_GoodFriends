@@ -150,10 +150,6 @@ namespace AppRazor.Pages.Friends
             {
                 ValidationErrors["FirstName"] = "First name is required.";
             }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(FirstName, @"[^a-zA-Z0-9\s]"))
-            {
-                ValidationErrors["FirstName"] = "First name can only contain letters, numbers, and spaces.";
-            }
             else if (FirstName.Length > 100)
             {
                 ValidationErrors["FirstName"] = "First name cannot exceed 100 characters.";
@@ -163,10 +159,6 @@ namespace AppRazor.Pages.Friends
             if (string.IsNullOrWhiteSpace(LastName))
             {
                 ValidationErrors["LastName"] = "Last name is required.";
-            }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(LastName, @"[^a-zA-Z0-9\s]"))
-            {
-                ValidationErrors["LastName"] = "Last name can only contain letters, numbers, and spaces.";
             }
             else if (LastName.Length > 100)
             {

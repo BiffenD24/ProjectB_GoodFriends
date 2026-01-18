@@ -85,6 +85,8 @@ namespace AppRazor.Pages
         {
             try
             {
+                _logger.LogInformation($"OnPost called - AddressId: {AddressId}, FriendId: {FriendId}, Street: {StreetAddress}");
+                
                 // Server-side validation
                 ValidateInput();
                 
@@ -106,23 +108,27 @@ namespace AppRazor.Pages
                 // Create or update address
                 var addressDto = new AddressCuDto
                 {
-                    AddressId = AddressId == Guid.Empty ? null : AddressId,
+                    AddressId = (AddressId.HasValue && AddressId != Guid.Empty) ? AddressId : null,
                     StreetAddress = StreetAddress?.Trim(),
                     ZipCode = ZipCode,
                     City = City?.Trim(),
                     Country = Country?.Trim()
                 };
 
-                var response = AddressId.HasValue && AddressId != Guid.Empty
+                bool isUpdate = AddressId.HasValue && AddressId != Guid.Empty;
+                
+                _logger.LogInformation($"IsUpdate: {isUpdate}, AddressDto.AddressId: {addressDto.AddressId}");
+                
+                var response = isUpdate
                     ? await _addressService.UpdateAddressAsync(addressDto)
                     : await _addressService.CreateAddressAsync(addressDto);
 
                 if (response?.Item != null)
                 {
-                    _logger.LogInformation($"Address {(IsNewAddress ? "created" : "updated")}: {response.Item.AddressId}");
+                    _logger.LogInformation($"Address {(isUpdate ? "updated" : "created")}: {response.Item.AddressId}");
                     
                     // If this is a new address and associated with a friend, update the friend
-                    if (IsNewAddress && FriendId.HasValue)
+                    if (!isUpdate && FriendId.HasValue)
                     {
                         var friendResult = await _friendsService.ReadFriendAsync(FriendId.Value, false);
                         if (friendResult?.Item != null)
@@ -176,10 +182,6 @@ namespace AppRazor.Pages
             {
                 ValidationErrors["StreetAddress"] = "Street address is required.";
             }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(StreetAddress, @"[^a-zA-Z0-9\s]"))
-            {
-                ValidationErrors["StreetAddress"] = "Street address can only contain letters, numbers, and spaces.";
-            }
             else if (StreetAddress.Length > 255)
             {
                 ValidationErrors["StreetAddress"] = "Street address cannot exceed 255 characters.";
@@ -189,10 +191,6 @@ namespace AppRazor.Pages
             if (string.IsNullOrWhiteSpace(City))
             {
                 ValidationErrors["City"] = "City is required.";
-            }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(City, @"[^a-zA-Z0-9\s]"))
-            {
-                ValidationErrors["City"] = "City can only contain letters, numbers, and spaces.";
             }
             else if (City.Length > 100)
             {
@@ -209,10 +207,6 @@ namespace AppRazor.Pages
             if (string.IsNullOrWhiteSpace(Country))
             {
                 ValidationErrors["Country"] = "Country is required.";
-            }
-            else if (System.Text.RegularExpressions.Regex.IsMatch(Country, @"[^a-zA-Z0-9\s]"))
-            {
-                ValidationErrors["Country"] = "Country can only contain letters, numbers, and spaces.";
             }
             else if (Country.Length > 100)
             {

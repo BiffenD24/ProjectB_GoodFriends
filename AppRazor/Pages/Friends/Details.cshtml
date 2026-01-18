@@ -36,7 +36,7 @@
                                 }
                             </div>
                             <div class="col-md-6 text-end">
-                                <a href="~/EditFriend?id=@Model.Friend.FriendId" class="btn btn-warning">
+                                <a href="~/Friends/EditFriend/@Model.Friend.FriendId" class="btn btn-warning">
                                     <i class="bi bi-pencil"></i> Edit Friend
                                 </a>
                             </div>
@@ -77,13 +77,10 @@
 
                         <!-- Pets Section -->
                         <div class="card mb-4">
-                            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                            <div class="card-header bg-info text-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-heart"></i> Pets (@(Model.Friend.Pets?.Count ?? 0))
                                 </h5>
-                                <a href="~/AddPet?friendId=@Model.Friend.FriendId" class="btn btn-sm btn-success">
-                                    <i class="bi bi-plus"></i> Add Pet
-                                </a>
                             </div>
                             <div class="card-body">
                                 @if (Model.Friend.Pets == null || !Model.Friend.Pets.Any())
@@ -118,13 +115,10 @@
 
                         <!-- Quotes Section -->
                         <div class="card mb-4">
-                            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <div class="card-header bg-success text-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-chat-quote"></i> Favorite Quotes (@(Model.Friend.Quotes?.Count ?? 0))
                                 </h5>
-                                <a href="~/AddQuote?friendId=@Model.Friend.FriendId" class="btn btn-sm btn-success">
-                                    <i class="bi bi-plus"></i> Add Quote
-                                </a>
                             </div>
                             <div class="card-body">
                                 @if (Model.Friend.Quotes == null || !Model.Friend.Quotes.Any())
@@ -178,10 +172,14 @@
                 <p class="text-muted small">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeletePetBtn" onclick="confirmDeletePet()">
-                    <i class="bi bi-trash"></i> Delete
-                </button>
+                <form id="deletePetForm" method="post" asp-page-handler="DeletePet">
+                    <input type="hidden" name="petId" id="petIdToDelete" />
+                    <input type="hidden" name="friendId" id="friendIdForPet" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -200,77 +198,33 @@
                 <p class="text-muted small">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteQuoteBtn" onclick="confirmDeleteQuote()">
-                    <i class="bi bi-trash"></i> Delete
-                </button>
+                <form id="deleteQuoteForm" method="post" asp-page-handler="DeleteQuote">
+                    <input type="hidden" name="quoteId" id="quoteIdToDelete" />
+                    <input type="hidden" name="friendId" id="friendIdForQuote" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let petToDelete = null;
-    let quoteToDelete = null;
-    let friendId = null;
-
     function deletePet(petId, petName, fId) {
-        petToDelete = petId;
-        friendId = fId;
         document.getElementById('petName').textContent = petName;
+        document.getElementById('petIdToDelete').value = petId;
+        document.getElementById('friendIdForPet').value = fId;
         const modal = new bootstrap.Modal(document.getElementById('deletePetModal'));
         modal.show();
     }
 
-    function confirmDeletePet() {
-        if (!petToDelete || !friendId) return;
-
-        fetch(`/api/pets/DeleteItem/${petToDelete}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (response.ok) {
-                // Close modal and reload
-                const modal = bootstrap.Modal.getInstance(document.getElementById('deletePetModal'));
-                modal.hide();
-                location.reload();
-            } else {
-                alert('Failed to delete pet');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error deleting pet');
-        });
-    }
-
     function deleteQuote(quoteId, author, fId) {
-        quoteToDelete = quoteId;
-        friendId = fId;
         document.getElementById('quoteName').textContent = author;
+        document.getElementById('quoteIdToDelete').value = quoteId;
+        document.getElementById('friendIdForQuote').value = fId;
         const modal = new bootstrap.Modal(document.getElementById('deleteQuoteModal'));
         modal.show();
-    }
-
-    function confirmDeleteQuote() {
-        if (!quoteToDelete || !friendId) return;
-
-        fetch(`/api/quotes/DeleteItem/${quoteToDelete}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (response.ok) {
-                // Close modal and reload
-                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteQuoteModal'));
-                modal.hide();
-                location.reload();
-            } else {
-                alert('Failed to delete quote');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error deleting quote');
-        });
     }
 </script>

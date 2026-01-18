@@ -21,15 +21,14 @@
                     }
 
                     <form id="editForm" method="post">
-                        <input type="hidden" name="FriendId" value="@Model.Friend?.FriendId" />
+                        <input type="hidden" asp-for="FriendId" />
 
                         <!-- First Name -->
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("FirstName") ? "is-invalid" : "")" 
-                                   id="firstName" name="FirstName" value="@Model.Friend?.FirstName" 
-                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
-                                   title="First name can only contain letters, numbers, and spaces">
+                                   id="firstName" asp-for="FirstName" 
+                                   required maxlength="100">
                             @if (Model.ValidationErrors.ContainsKey("FirstName"))
                             {
                                 <div class="invalid-feedback d-block">
@@ -42,9 +41,8 @@
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @(Model.ValidationErrors.ContainsKey("LastName") ? "is-invalid" : "")" 
-                                   id="lastName" name="LastName" value="@Model.Friend?.LastName" 
-                                   required maxlength="100" pattern="^[a-zA-Z0-9\s]*$"
-                                   title="Last name can only contain letters, numbers, and spaces">
+                                   id="lastName" asp-for="LastName" 
+                                   required maxlength="100">
                             @if (Model.ValidationErrors.ContainsKey("LastName"))
                             {
                                 <div class="invalid-feedback d-block">
@@ -57,7 +55,7 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control @(Model.ValidationErrors.ContainsKey("Email") ? "is-invalid" : "")" 
-                                   id="email" name="Email" value="@Model.Friend?.Email" 
+                                   id="email" asp-for="Email" 
                                    required maxlength="255">
                             @if (Model.ValidationErrors.ContainsKey("Email"))
                             {
@@ -72,8 +70,7 @@
                         <div class="mb-3">
                             <label for="birthday" class="form-label">Birthday</label>
                             <input type="date" class="form-control @(Model.ValidationErrors.ContainsKey("Birthday") ? "is-invalid" : "")" 
-                                   id="birthday" name="Birthday" 
-                                   value="@(Model.Friend?.Birthday?.ToString("yyyy-MM-dd") ?? "")">
+                                   id="birthday" asp-for="Birthday">
                             @if (Model.ValidationErrors.ContainsKey("Birthday"))
                             {
                                 <div class="invalid-feedback d-block">
