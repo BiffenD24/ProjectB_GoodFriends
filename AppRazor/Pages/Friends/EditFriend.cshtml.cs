@@ -27,6 +27,9 @@ namespace AppRazor.Pages.Friends
         [BindProperty]
         public DateTime? Birthday { get; set; }
 
+        [BindProperty]
+        public Guid? AddressId { get; set; }
+
         public IFriend Friend { get; set; }
         public bool IsNewFriend { get; set; }
         public string ErrorMessage { get; set; }
@@ -65,6 +68,7 @@ namespace AppRazor.Pages.Friends
                 LastName = Friend.LastName;
                 Email = Friend.Email;
                 Birthday = Friend.Birthday;
+                AddressId = Friend.Address?.AddressId;
                 IsNewFriend = false;
 
                 return Page();
@@ -94,6 +98,7 @@ namespace AppRazor.Pages.Friends
                         if (result?.Item != null)
                         {
                             Friend = result.Item;
+                            AddressId = Friend.Address?.AddressId;
                         }
                     }
                     return Page();
@@ -106,7 +111,8 @@ namespace AppRazor.Pages.Friends
                     FirstName = FirstName?.Trim(),
                     LastName = LastName?.Trim(),
                     Email = Email?.Trim(),
-                    Birthday = Birthday
+                    Birthday = Birthday,
+                    AddressId = AddressId
                 };
 
                 var response = FriendId.HasValue && FriendId != Guid.Empty
@@ -123,6 +129,7 @@ namespace AppRazor.Pages.Friends
                     LastName = Friend.LastName;
                     Email = Friend.Email;
                     Birthday = Friend.Birthday;
+                    AddressId = Friend.Address?.AddressId;
                     IsNewFriend = false;
                     
                     // Redirect after 2 seconds
